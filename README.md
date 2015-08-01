@@ -49,8 +49,8 @@ modifying `/etc`.
     with-overlayfs                                  \
         --dir-start /etc                            \
         --replace  myconf.conf myconf-modified.conf \
-                --dir-end                           \
-                -- ./program my-arg
+        --dir-end                                   \
+        -- ./program my-arg
 ```
 
 * Example B
@@ -89,8 +89,8 @@ A wrapper script for the program can be made using `with-overlayfs`, e.g.:
 ## Common Linux distributions
 
 The required packages are make, g++, automake, autoconf, libtool,
-and the ronn nodejs package. With all the dependencies, it can be 
-built as such:
+and the ronn nodejs package. With all the dependencies, it can be
+built and installed as such:
 
 
 ```
@@ -116,7 +116,7 @@ Then, the following will generate the RPM and invoke mock:
 
 ```
 
-The reuslt outputs are in a subdirectory under the current directory.
+The resulting outputs are in a subdirectory under the current directory.
 
 ```
     $ ls -1 with-overlayfs-0.1-2015.08.01.182506.git471b7f084d8d.fc21.src.rpm.mockresult
