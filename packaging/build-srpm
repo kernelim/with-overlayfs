@@ -1,0 +1,132 @@
+#!/bin/bash
+
+set -e
+set -u
+
+
+PKG_NAME=with-overlayfs
+t=`dirname ${BASH_SOURCE}`
+PKG_VERSION=`cat ${t}/../configure.ac | grep ^AC_INIT | awk -F" " '{print $2}' | tr -d "[],"`
+PKG_RELEASE=`git log --pretty="%ai" -n 1 | tr -d ':' | tr ' \-+:' '....'  | cut -c1-17`
+PKG_RELEASE=${PKG_RELEASE}.git`git log --pretty="%h" -n 1`
+
+OUTPUT_DIRECTORY=
+SIGNER_PROGRAM=
+LLVM_PREBUILT=
+
+syntax() {
+    echo "build-srpm -l [llvm] -o [output directory] (-s signer-program) (-- <mock arugments>)"
+    echo ""
+    echo "This script can generate the SRPM, and optionally it can also run mock with"
+    echo "the provided mock arugments."
+}
+
+
+while getopts "o:s:l:" o; do
+    case "${o}" in
+        o)
+            OUTPUT_DIRECTORY=${OPTARG}
+            ;;
+        l)
+            LLVM_PREBUILT=${OPTARG}
+            ;;
+        s)
+            SIGNER_PROGRAM=${OPTARG}
+            ;;
+        *)
+            syntax
+            exit 1
+            ;;
+    esac
+done
+
+shift $(($OPTIND - 1))
+
+
+if [ -z "$OUTPUT_DIRECTORY" ] ; then
+    echo error: no output directory specified
+    echo
+    syntax
+    exit 1
+fi
+
+if [ ! -d ${OUTPUT_DIRECTORY} ] ; then
+    echo "error: output directory doesn't exist"
+    exit 1
+fi
+
+TARGET_DIR=`mktemp --tmpdir -d XXXXXXrpm-packaging`
+
+cleanups () {
+    rm -rf ${TARGET_DIR}
+}
+
+trap cleanups EXIT
+
+RPMBUILD_PARAM_LLVM=
+if [[ "${LLVM_PREBUILT}" != "" ]] ; then
+    RPMBUILD_PARAM_LLVM="--with llvm_prebuild"
+fi
+
+make_srpm() {
+    mkdir -p ${TARGET_DIR}/SPECS || return 1
+    mkdir -p ${TARGET_DIR}/SOURCES || return 1
+
+    git archive --format tar.gz --prefix=${PKG_NAME}-${PKG_VERSION}/ HEAD > \
+        ${TARGET_DIR}/SOURCES/${PKG_NAME}-${PKG_VERSION}.tar.gz || return 1
+
+    sources_descfile=${TARGET_DIR}/SOURCES/sources_desc
+    prepare_descfile=${TARGET_DIR}/SOURCES/prepare_desc
+    echo -n > ${sources_descfile}
+    echo -n > ${prepare_descfile}
+    i=1
+    git submodule | while read line
+    do
+        stringarray=($line)
+        githash=${stringarray[0]}
+        subdir=${stringarray[1]}
+        tag=${stringarray[2]}
+        modname=`echo ${subdir} | tr '/' '-'`
+        filename=${PKG_NAME}-${modname}-${githash}.tar.gz
+
+        git --git-dir ${subdir}/.git archive \
+            --format tar.gz --prefix=${PKG_NAME}-${PKG_VERSION}/${subdir}/ HEAD > \
+            ${TARGET_DIR}/SOURCES/${filename}
+
+        echo "Source${i}:        ${filename}" >> ${sources_descfile}
+        echo "tar -zxf \$RPM_SOURCE_DIR/${filename} -C .." >> ${prepare_descfile}
+        i=$[${i} + 1]
+    done
+
+    destspec=${TARGET_DIR}/SPECS/${PKG_NAME}.spec
+    cat ${t}/${PKG_NAME}.spec | sed s/PKG_VERSION/${PKG_VERSION}/g \
+       | sed s/PKG_NAME/${PKG_NAME}/g \
+       | sed s/PKG_RELEASE/${PKG_RELEASE}/g > ${destspec} || return 1
+    sed -i "/Source0: /r ${sources_descfile}"  ${destspec}
+    sed -i "/[%]setup -q/r ${prepare_descfile}"  ${destspec}
+
+    if [[ "${LLVM_PREBUILT}" != "" ]] ; then
+        cp -a ${LLVM_PREBUILT} ${TARGET_DIR}/SOURCES/llvm-prebuilt.gz
+    fi
+
+    rpmbuild -bs --define "_topdir ${TARGET_DIR}" ${RPMBUILD_PARAM_LLVM} ${destspec} || return 1
+    return 0
+}
+
+make_srpm ${PKG_NAME}
+
+if [[ "$@" != "" ]] ; then
+    mock --resultdir=${TARGET_DIR}/RESULT ${TARGET_DIR}/SRPMS/*.src.rpm ${RPMBUILD_PARAM_LLVM} "$@" ||
+        (cat ${TARGET_DIR}/RESULT/build.log && exit 1)
+    if [[ "${SIGNER_PROGRAM}" != "" ]] ; then
+        for i in ${TARGET_DIR}/RESULT/*.rpm ; do
+            ${SIGNER_PROGRAM} $i
+        done
+    fi
+    OUTPUT_NAME=$(basename `ls -1 ${TARGET_DIR}/RESULT/*.src.rpm`).mockresult
+    mv -T -v ${TARGET_DIR}/RESULT ${OUTPUT_DIRECTORY}/${OUTPUT_NAME}
+else
+    for file in ${TARGET_DIR}/SRPMS/*.src.rpm; do
+        cp ${file} ${OUTPUT_DIRECTORY}
+    done
+fi

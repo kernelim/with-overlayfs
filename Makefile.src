@@ -1,0 +1,13 @@
+#
+# Included from Makefile.am to extend on the generated Makefile.in.
+#
+
+# Support flymake syntax checking protocol
+CFLAGS_CHECK_EXT=
+
+ifneq ($(QUOTE_INCLUDE_DIRS),)
+CFLAGS_CHECK_EXT=-iquote$(QUOTE_INCLUDE_DIRS)
+endif
+
+check-syntax:
+	g++ -x c++ $(CXXFLAGS) $(CHK_SOURCES) $(CFLAGS_CHECK_EXT) -c -fsyntax-only
