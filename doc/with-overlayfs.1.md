@@ -49,8 +49,8 @@ modifying `/etc`.
     with-overlayfs                                  \
         --dir-start /etc                            \
         --replace  myconf.conf myconf-modified.conf \
-                --dir-end                           \
-                -- ./program my-arg
+        --dir-end                                   \
+        -- ./program my-arg
 ```
 
 * Example B
