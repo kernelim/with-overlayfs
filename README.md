@@ -22,21 +22,21 @@ command.
 
 * `--help`,`-h`, or no args
 
-	   Short a command line syntax summery
+       Short a command line syntax summery
 
 * `--discard-after-exec`
 
-	   Discard the effects from the namespace immediately after execution (uses am LD_PRELOAD wrapper)
+       Discard the effects from the namespace immediately after execution (uses am LD_PRELOAD wrapper)
 
 * `--dir-start [path] (dir options...) --dir-end`
 
-	   Describe operations under the provided path. `(dir options...)` can be:
+       Describe operations under the provided path. `(dir options...)` can be:
 
     `--replace [target] [source]`
 
     Replace 'target' under 'path' with the filename provided as 'source'.
     The file will be copied, and the storage location is for the overlayfs
-	mounts taking place is /tmp.
+    mounts taking place is /tmp.
 
 ## EXAMPLES
 
@@ -46,10 +46,10 @@ We can experiment with a program that reads a file under `/etc`, without
 modifying `/etc`.
 
 ```
-    with-overlayfs  \
-        --dir-start /etc  \
-        --replace  myconf.conf myconf-modified.conf	\
-                --dir-end \
+    with-overlayfs                                  \
+        --dir-start /etc                            \
+        --replace  myconf.conf myconf-modified.conf \
+                --dir-end                           \
                 -- ./program my-arg
 ```
 
@@ -70,19 +70,19 @@ A wrapper script for the program can be made using `with-overlayfs`, e.g.:
 ```
     #!/bin/bash
 
-    exec with-overlayfs									\
-        --discard-after-exec								\
-        --dir-start /usr/lib64								\
-        --replace  libc.so.6			/opt/program/special/libc.so.6		\
-        --replace  libpthread.so.0		/opt/program/special/libpthread.so.0	\
-        --replace  libm.so.6			/opt/program/special/libm.so.6		\
-        --replace  libgcc_s.so.1		/opt/program/special/libgcc_s.so.1	\
-        --replace  libdl.so.2			/opt/program/special/libdl.so.2		\
-        --replace  librt.so.1			/opt/program/special/librt.so.1		\
-        --replace  ld-linux-x86-64.so.2 /opt/program/special/ld-linux-x86-64.so.2	\
-        --replace  libstdc++.so.6		/opt/program/special/libstdc++.so.6	\
-                --dir-end								\
-        --	/usr/bin/program "$@"
+    exec with-overlayfs                                                             \
+        --discard-after-exec                                                        \
+        --dir-start /usr/lib64                                                      \
+        --replace  libc.so.6            /opt/program/special/libc.so.6              \
+        --replace  libpthread.so.0      /opt/program/special/libpthread.so.0        \
+        --replace  libm.so.6            /opt/program/special/libm.so.6              \
+        --replace  libgcc_s.so.1        /opt/program/special/libgcc_s.so.1          \
+        --replace  libdl.so.2           /opt/program/special/libdl.so.2             \
+        --replace  librt.so.1           /opt/program/special/librt.so.1             \
+        --replace  ld-linux-x86-64.so.2 /opt/program/special/ld-linux-x86-64.so.2   \
+        --replace  libstdc++.so.6       /opt/program/special/libstdc++.so.6         \
+        --dir-end                                                                   \
+        --  /usr/bin/program "$@"
 ```
 # Building
 
