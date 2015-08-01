@@ -49,8 +49,8 @@ modifying `/etc`.
     with-overlayfs  \
         --dir-start /etc  \
         --replace  myconf.conf myconf-modified.conf	\
- 		--dir-end \
-		-- ./program my-arg
+                --dir-end \
+                -- ./program my-arg
 ```
 
 * Example B
@@ -70,17 +70,17 @@ A wrapper script for the program can be made using `with-overlayfs`, e.g.:
 ```
     #!/bin/bash
 
-    exec with-overlayfs																\
-        --discard-after-exec														\
-        --dir-start /usr/lib64														\
-        --replace  libc.so.6			/opt/program/special/libc.so.6				\
-        --replace  libpthread.so.0		/opt/program/special/libpthread.so.0		\
-        --replace  libm.so.6			/opt/program/special/libm.so.6				\
-        --replace  libgcc_s.so.1		/opt/program/special/libgcc_s.so.1			\
-        --replace  libdl.so.2			/opt/program/special/libdl.so.2				\
-        --replace  librt.so.1			/opt/program/special/librt.so.1				\
+    exec with-overlayfs									\
+        --discard-after-exec								\
+        --dir-start /usr/lib64								\
+        --replace  libc.so.6			/opt/program/special/libc.so.6		\
+        --replace  libpthread.so.0		/opt/program/special/libpthread.so.0	\
+        --replace  libm.so.6			/opt/program/special/libm.so.6		\
+        --replace  libgcc_s.so.1		/opt/program/special/libgcc_s.so.1	\
+        --replace  libdl.so.2			/opt/program/special/libdl.so.2		\
+        --replace  librt.so.1			/opt/program/special/librt.so.1		\
         --replace  ld-linux-x86-64.so.2 /opt/program/special/ld-linux-x86-64.so.2	\
-        --replace  libstdc++.so.6		/opt/program/special/libstdc++.so.6			\
-		--dir-end																	\
+        --replace  libstdc++.so.6		/opt/program/special/libstdc++.so.6	\
+                --dir-end								\
         --	/usr/bin/program "$@"
 ```

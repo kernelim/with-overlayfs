@@ -2,9 +2,13 @@
 
 ## Common Linux distributions
 
+The required packages are make, g++, automake, autoconf, libtool,
+and the ronn nodejs package. With all the dependencies, it can be 
+built as such:
+
 
 ```
-    ./autogen
+    ./autogen.sh
     ./configure
     make
     make install
