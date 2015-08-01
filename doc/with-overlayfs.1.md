@@ -45,13 +45,13 @@ command.
 We can experiment with a program that reads a file under `/etc`, without
 modifying `/etc`.
 
-``
+```
     with-overlayfs  \
         --dir-start /etc  \
         --replace  myconf.conf myconf-modified.conf	\
  		--dir-end \
 		-- ./program my-arg
-``
+```
 
 * Example B
 
@@ -67,7 +67,7 @@ files under their expected resting place, `/usr/lib64`:
 
 A wrapper script for the program can be made using `with-overlayfs`, e.g.:
 
-``
+```
     #!/bin/bash
 
     exec with-overlayfs																\
@@ -83,4 +83,4 @@ A wrapper script for the program can be made using `with-overlayfs`, e.g.:
         --replace  libstdc++.so.6		/opt/program/special/libstdc++.so.6			\
 		--dir-end																	\
         --	/usr/bin/program "$@"
-``
+```

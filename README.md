@@ -45,13 +45,13 @@ command.
 We can experiment with a program that reads a file under `/etc`, without
 modifying `/etc`.
 
-``
+```
     with-overlayfs  \
         --dir-start /etc  \
         --replace  myconf.conf myconf-modified.conf	\
  		--dir-end \
 		-- ./program my-arg
-``
+```
 
 * Example B
 
@@ -67,7 +67,7 @@ files under their expected resting place, `/usr/lib64`:
 
 A wrapper script for the program can be made using `with-overlayfs`, e.g.:
 
-``
+```
     #!/bin/bash
 
     exec with-overlayfs																\
@@ -83,10 +83,11 @@ A wrapper script for the program can be made using `with-overlayfs`, e.g.:
         --replace  libstdc++.so.6		/opt/program/special/libstdc++.so.6			\
 		--dir-end																	\
         --	/usr/bin/program "$@"
-``
+```
 # Building
 
 ## Common Linux distributions
+
 
 ```
     ./autogen
@@ -111,10 +112,10 @@ Then, the following will generate the RPM and invoke mock:
 
 ```
 
-The outputs are in a subdirectory in the local directory.
+The reuslt outputs are in a subdirectory under the current directory.
 
 ```
-    $ ls -1 with-overlayfs-0.1-2015.08.01.182506.git471b7f084d8d.fc21.src.rpm.mockresult 
+    $ ls -1 with-overlayfs-0.1-2015.08.01.182506.git471b7f084d8d.fc21.src.rpm.mockresult
     build.log
     root.log
     state.log

@@ -26,7 +26,7 @@ Then, the following will generate the RPM and invoke mock:
 
 ```
 
-The outputs are in a subdirectory in the local directory.
+The reuslt outputs are in a subdirectory under the current directory.
 
 ```
     $ ls -1 with-overlayfs-0.1-2015.08.01.182506.git471b7f084d8d.fc21.src.rpm.mockresult
