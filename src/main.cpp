@@ -266,9 +266,9 @@ int prepare_state(const Params &params, State &state, int ruid, int rgid)
         std::string upperdir = dirstate.uppertmp->path;
         std::string workdir = dirstate.workdirtmp->path;
 
-        chown(upperdir.c_str(), ruid, rgid);
-        chown(workdir.c_str(), ruid, rgid);
-        chown(tmp_mountpoint.path.c_str(), ruid, rgid);
+        ASSERT(0 == chown(upperdir.c_str(), ruid, rgid));
+        ASSERT(0 == chown(workdir.c_str(), ruid, rgid));
+        ASSERT(0 == chown(tmp_mountpoint.path.c_str(), ruid, rgid));
         dirstate.workdirtmp->dirs_to_unlink.push_back("work");
 
         /*
@@ -362,9 +362,9 @@ int crux(int argc, char *argv[])
             close(sockets[1]);
 
             char q[1];
-            read(sockets[0], q, 1);
+            ASSERT(0 <= read(sockets[0], q, 1));
             lazy_unmount(params);
-            write(sockets[0], q, 1);
+            ASSERT(0 <= write(sockets[0], q, 1));
 
             exit(-1);
             return 0;
