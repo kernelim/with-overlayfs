@@ -89,7 +89,7 @@ A wrapper script for the program can be made using `with-overlayfs`, e.g.:
 ## Common Linux distributions
 
 The required packages are make, g++, automake, autoconf, libtool,
-and the ronn nodejs package. With all the dependencies, it can be
+and the pandoc package. With all the dependencies, it can be
 built and installed as such:
 
 
