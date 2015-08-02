@@ -8,7 +8,7 @@ with_overlayfs_SOURCES = src/main.cpp
 man_MANS = doc/with-overlayfs.1
 
 doc/with-overlayfs.1: doc/with-overlayfs.1.md
-	ronn-nodejs $< > $@
+	pandoc -s -t man $< -o $@
 
 lib_LTLIBRARIES=libwith_overlayfs_after_load.la
 libwith_overlayfs_after_load_la_SOURCES=src/after_load.c
