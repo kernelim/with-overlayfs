@@ -1,25 +1,22 @@
 Name:           PKG_NAME
 Version:        PKG_VERSION
 Release:        PKG_RELEASE%{?dist}
-Summary:        xx
-License:        LGPL2
-URL:            http://git
-# Sources go above
+Summary:        Execution wrapper for private volatile global path modifications
+License:        Apache License 2.0
+URL:            https://github.com/kernelim/with-overlayfs
 Source0:        PKG_NAME-PKG_VERSION.tar.gz
 
 BuildRequires:  gcc-c++
 BuildRequires:  automake
 BuildRequires:  autoconf
 BuildRequires:  libtool
-BuildRequires:  nodejs-ronn
+BuildRequires:  pandoc
 
 %description
-xx
+Execution wrapper for private volatile global path modifications
 
 %prep
 %setup -q
-
-# Extracing tarballs above
 
 %build
 
